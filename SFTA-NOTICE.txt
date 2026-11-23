@@ -1,0 +1,3 @@
+Upstream SFTA.ps1 is incorporated from ComoEstaisAmigos/PS-SFTA.
+See the source repository and its MIT license:
+https://github.com/ComoEstaisAmigos/PS-SFTA
