@@ -1,0 +1,53 @@
+{
+  "name": "file-association-manager",
+  "productName": "File Association Manager",
+  "version": "0.3.3",
+  "description": "Windows file association manager",
+  "private": true,
+  "main": "desktop/main.cjs",
+  "scripts": {
+    "build": "vite build",
+    "test": "node --test tests/*.test.cjs",
+    "test:windows": "powershell.exe -NoProfile -NonInteractive -STA -File tests/windows-associations.ps1",
+    "start": "npm run build && electron .",
+    "package": "npm run build && electron-builder --win portable"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "electron": "^43.0.0",
+    "electron-builder": "^26.0.0",
+    "vite": "^7.0.0"
+  },
+  "build": {
+    "appId": "local.fileassociationmanager",
+    "productName": "File Association Manager",
+    "artifactName": "FileAssociationManager-${version}-portable.${ext}",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "desktop/*.cjs",
+      "desktop/messages.json",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "desktop/AssociationWorker.ps1",
+        "to": "AssociationWorker.ps1"
+      },
+      {
+        "from": "SFTA.ps1",
+        "to": "SFTA.ps1"
+      },
+      {
+        "from": "LICENSE",
+        "to": "LICENSE"
+      }
+    ]
+  }
+}

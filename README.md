@@ -1,34 +1,40 @@
-# PotPlayer FTA
+# 文件关联管理器
 
-这个独立仓库用于在 Windows 11 24H2、25H2 的 `UserChoiceLatest` 机制下，批量把 PotPlayer 已注册的视频扩展名设置为当前用户的默认打开应用。
+为当前 Windows 账户批量设置文件扩展名的默认打开应用。选择目标应用，再从扩展名列表或合集中多选，预览后一次应用。结果会逐项显示已应用、已是默认和未生效。
 
-## 使用
+## 桌面应用
 
-在 PowerShell 中进入仓库目录后运行：
+- 可以选择 Windows 已注册的应用，也可以通过「浏览 .exe」选择便携应用。
+- 内置视频、图片、音频、文档、压缩包、代码与网页合集。自定义合集可新建、编辑和删除，并自动保存在当前账户。也可以把当前选择保存为合集。
+- 支持搜索、排序和「仅显示支持的格式」。列表表头的复选框覆盖当前筛选结果的所有页面。
+- Windows 拒绝写入的类型可从结果页进入系统默认应用设置。
+- 可切换浅色、深色或跟随系统。内置合集标题旁的「复制为自定义合集」会预填扩展名供编辑。
+- 界面默认使用英语，可在 Settings → Language 切换到简体中文。语言选择会在重启后保留。
+- 「导出」保存自定义合集和当前默认应用关联为 JSON。换电脑后，点击「导入」查看匹配结果，再一次恢复能匹配到本机应用的关联。自定义合集按 ID 合并，同 ID 以备份为准。应用需预先安装并注册相应扩展名。
+- 导入时可为未匹配的一组扩展名选择本机应用或便携程序，也可以仅导入合集。批量结果将失败项置顶，可单独重试。
+- 「关联历史」保存通过桌面工具写入的变更。可搜索和筛选记录，回退前会核对当前默认应用，并在确认后恢复所选记录的原应用。
+- 迁移预览对照本机当前应用与导入目标，可逐项选择。手动匹配会列出目标应用仍缺少处理程序的扩展名。
+- 每项关联在修改 Windows 前都会写入操作日志。程序异常退出后会核对中断项，已确认的变更会补入历史，无法确认的扩展名会列在历史提示中。
 
-```powershell
-Set-ExecutionPolicy -Scope Process Bypass
-.PotPlayerFTA.ps1 -Action List
-.PotPlayerFTA.ps1 -Action Verify
-.PotPlayerFTA.ps1 -Action Set
-```
+## 回归测试
 
-只处理指定格式：
+运行 `npm test` 验证选择性迁移、历史补记与保存失败恢复。运行 `npm run test:windows` 验证 Windows 上的回退、外部改动和部分失败重试。Windows 测试创建独立的临时扩展名，并在结束后清理。
 
-```powershell
-.PotPlayerFTA.ps1 -Action Set -Extensions .mp4,.mkv,.avi,.mov,.webm
-```
+在仓库目录中运行以下命令启动。使用 npm run package 可生成 release 目录下的 Windows 便携版。
 
-脚本默认使用快捷方式指向的 PotPlayer 路径 `D:\soft\player\PotPlayer\PotPlayerMini64.exe`。如果播放器目录不同，可以传入 `-PlayerPath`。脚本从 PotPlayer 的注册信息读取 ProgID，因此不会凭空创建格式关联。
+~~~powershell
+npm ci
+npm start
+~~~
 
-`Set` 完成后会立即调用 `Verify`，验证 Windows 当前返回的 ProgID。随后可以在资源管理器中双击视频确认实际打开的程序。
+## PotPlayer 命令行
 
-## 机制
+原有 PotPlayer 专用入口仍可使用。
 
-`SFTA.ps1` 来自 [ComoEstaisAmigos/PS-SFTA](https://github.com/ComoEstaisAmigos/PS-SFTA) 的 UserChoiceLatest 分支。它同时写入新版 `UserChoiceLatest` 和旧版 `UserChoice`，并在写入前运行自检。新版哈希包含当前用户、机器和关联时间，不能通过简单修改注册表值绕过。
+~~~powershell
+.\PotPlayerFTA.ps1 -Action List
+.\PotPlayerFTA.ps1 -Action Verify
+.\PotPlayerFTA.ps1 -Action Set -Extensions .mp4,.mkv,.avi,.mov,.webm
+~~~
 
-普通视频扩展名不需要管理员权限。Windows 在不同版本上可能由 UCPD 保护少数类型，脚本会在写入失败时报告具体原因，不会静默宣称成功。
-
-## 来源与许可
-
-`SFTA.ps1` 保留上游版权和 MIT 许可声明。PotPlayerFTA 的新增代码采用 MIT 许可。
+桌面端复用 [PS-SFTA](https://github.com/ComoEstaisAmigos/PS-SFTA) 对 Windows 文件关联的支持，包括 Windows 11 的 UserChoiceLatest，批量写入后通过 Windows 默认应用接口逐项核对生效状态。SFTA.ps1 保留上游 MIT 许可声明。
