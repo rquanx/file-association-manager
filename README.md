@@ -59,17 +59,6 @@ The app uses Electron, React, and Vite. The `src/` directory contains the interf
 | `npm test` | Test selective migration and association history recovery. |
 | `npm run test:windows` | Test rollback, external changes, and partial retries using temporary file extensions that the script cleans up. |
 
-### Legacy PotPlayer script
-
-The original PowerShell tool supports PotPlayer Mini 64 installations with registered file associations. Pass the actual executable path with `-PlayerPath`.
-
-~~~powershell
-$player = 'C:\Path\To\PotPlayerMini64.exe'
-.\PotPlayerFTA.ps1 -Action List -PlayerPath $player
-.\PotPlayerFTA.ps1 -Action Verify -PlayerPath $player -Extensions .mp4,.mkv
-.\PotPlayerFTA.ps1 -Action Set -PlayerPath $player -Extensions .mp4,.mkv
-~~~
-
 ## Reporting issues
 
 Include the app version, Windows version and build, target app, affected extensions, and what opens when you double-click a file in File Explorer. [GitHub Issues](https://github.com/rquanx/file-association-manager/issues)
